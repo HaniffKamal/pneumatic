@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="content-area">
+    <h1>Simulink Modeling</h1>
+
+<div class="spacer1"></div>
+
+    <p class="intro-text">In this section, Discuss the process of building the Simulink model for the pneumatic system. 
+        Simulink is an extension of MATLAB that provides a graphical environment for modeling, simulating, and analyzing dynamic systems. 
+        It uses a block diagram approach, allowing users to build models by connecting functional blocks that represent system components. 
+        This visual method makes it easier to design and test complex systems without needing extensive coding. 
+        Simulink excels in dynamic simulations, helping engineers understand how systems behave over time under various conditions. 
+        It seamlessly integrates with MATLAB, enabling users to enhance their models with custom scripts and advanced computations. 
+        The platform supports specialized toolboxes for different industries, including control systems, signal processing, and mechanical engineering, making it invaluable for fields such as automation, aerospace, and automotive design. 
+        Its intuitive interface, real-time simulation capabilities, and extensive library of components make Simulink a powerful tool for engineers and researchers looking to develop and optimize sophisticated systems efficiently</p>
+    
+<div class="spacer3"></div>
+
+        <!-- Table of Contents -->
+    <div class="table-of-contents">
+        <h2>Contents</h2>
+        <ul>
+            <li><a href="#system-equations">System Equations</a></li>
+            <li><a href="#system-parameters">System Parameters</a></li>
+            <li><a href="#building-the-model">Building The Model</a></li>
+            <li><a href="#results">Results</a></li>
+        </ul>
+    </div>
+
+<div class="spacer3"></div>
+
+    </section>
+        <section id="system-equations">
+        <div class="spacer2"></div>
+        <h2>System Equations</h2>
+        <p class="intro-text">Can recap on the page <a href="/system/modeling">System Modeling</a>, How to get the transfer function equations.</p>
+        <div class="spacer2"></div>
+        <img src="{{ url_for('static', filename='Images/Pneumatic System.png') }}" alt="Pneumatic System" class="modeling-image">
+        <div class="spacer3"></div>
+        <p class="intro-text"> The transfer function between the input Pressure <b>P(s)</b> and the output displacement(piston position) <b>X(s)</b> then becomes:
+        <div class="spacer2"></div>
+            <p>\[ T(s) = \frac{X(s)}{P(s)} = \frac{A}{Ms^2 + Ds + C} \]</p>
+        </p>
+    </section>
+
+<div class="spacer3"></div>
+
+    <section id="system-parameters">
+        <h2>System Parameters</h2>
+        <div class="spacer1"></div>
+        <p class="image-description">Cross-sectional area of the piston (A) = <b>0.0314 mm</b><sup>2</sup></p>
+        <p class="image-description">Mass (M) = <b>20 kg</b></p>
+        <p class="image-description">Damping Coefficient (D) = <b>60 Ns/m</b></p>
+        <p class="image-description">Spring Constant (C) = <b>100 N/m</b></p>
+        <p class="image-description">Pressure (P) = <b>20684.28 Pa</b></p>
+    </section>
+
+<div class="spacer3"></div>
+
+<section id="building-the-model">
+<h2>Building The Model</h2>
+
+    <div class="spacer3"></div>
+
+    <img src="{{ url_for('static', filename='Images/Simulink(modellingB).png') }}" alt="Simulink(modellingB)" class="fifth-image">
+    <p class="intro-text">Insert a <b>block constant/step</b> for input system. Then, add a <b>tranfer function block</b>. Add <b>scope block</b> for display the output(Step Response).</p>
+
+    <div class="spacer3"></div>
+
+    <img src="{{ url_for('static', filename='Images/Simulink(modellingc).png') }}" alt="Simulink(modellingc)" class="three-image">
+    <p class="intro-text">Double click the tranfer function block. Then, declare the value numerator as area of piston. For denominator put the value mass, damping and spring such as above image. </p>
+</section>
+
+<div class="spacer3"></div>
+
+<section id="results">
+<h2>Results</h2>
+
+    <div class="spacer3"></div>
+
+    <img src="{{ url_for('static', filename='Images/Simulink(modelling).png') }}" alt="Simulink(modelling)" class="simulink-image">
+     <p class="intro-text">This graph show the step response/output from the simulink block. To improve the pneumatic system system, can add the controller such as on page <a href="/simulink/control">Simulink Control</a>.</p>
+            <p>Step Response Information:</p>
+        <ul>
+            <li>Rise Time: {{ 0.9316 }} seconds</li>
+            <li>Settling Time: {{ 2.6917 }} seconds</li>
+            <li>Overshoot: {{ 5.83 }} %</li>
+            <li>Steady-State Value: {{ 0.065 }} meters</li>
+        </ul>
+</section>
+
+<div class="spacer3"></div>
+
+</div>
+{% endblock %}

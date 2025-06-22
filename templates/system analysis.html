@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="content-area">
+    <h1>System Analysis</h1>
+    <!-- <p>This section covers the modeling aspects of the pneumatic system.</p> -->
+    <div class="spacer3"></div>
+
+    <!-- Table of Contents -->
+    <div class="table-of-contents">
+        <h2>Contents</h2>
+        <ul>
+            <li><a href="#system_model_and_parameters">System Model And Parameters</a></li>
+            <li><a href="#open_loop_step_response">Open-Loop Step Response</a></li>
+            <li><a href="#open_loop_poles/zeros">Open-Loop Poles/Zeros</a></li>
+            <li><a href="#open_loop_bode_plot">Open-Loop Bode Plot</a></li>
+        </ul>
+    </div>
+
+    <!-- Sections -->
+    <section id="system_model_and_parameters">
+        <h2>System Model And Parameters</h2>
+        <div class="spacer1"></div>
+        <p class="intro-text">The transfer function model for the pneumatic control problem is given below. Please see the pneumatic <a href="/system/modeling">System Modeling</a> page for the derivation.</p>
+        <div class="spacer3"></div>
+        <p>\[ T(s) = \frac{X(s)}{P(s)} = \frac{A}{Ms^2 + Ds + C} \]</p>
+        <div class="spacer2"></div>
+        <p>The parameters is:</p>
+        <div class="spacer1"></div>
+        <p class="image-description">Cross-sectional area of the piston (A) = <b>0.0314 mm</b><sup>2</sup></p>
+        <p class="image-description">Mass (M) = <b>20 kg</b></p>
+        <p class="image-description">Damping Coefficient (D) = <b>60 Ns/m</b></p>
+        <p class="image-description">Spring Constant (C) = <b>100 N/m</b></p>
+        <p class="image-description">Pressure (P) = <b>20684.28 Pa</b></p>
+    </section>
+
+    <div class="spacer3"></div>
+
+    <section id="open_loop_step_response">
+        <h2>Open-Loop Step Response</h2>
+        <div class="spacer1"></div>
+        <p class="intro-text">Open-loop control is one of the simplest control strategies used to operate pneumatic systems. In this mode, the system controller sends commands directly to the actuator, without monitoring or adjusting based on the resulting output. Although this method lacks feedback, it provides a clear foundation for understanding system behavior and serves as a precursor to more advanced control strategies.</p>
+        <img src="{{ url_for('static', filename='Images/OpenLoop.png') }}" alt="OpenLoop" class="fifth-image">
+        <p class="intro-text">The open-loop response of the system, without any feedback control, to a step input pressure (P) of <b>20684.28 Pa</b> is simulated in MATLAB as follows:</p>
+        <div class="code-container"> 
+            <code> 
+                A = 0.000314;<br> 
+                M = 20;<br> 
+                D = 60;<br> 
+                C = 100;<br>
+                P = 20684.28;<br><br> 
+                s = tf('s');<br><br> 
+                T = A / (M*s^2 + D*s + C);<br>
+                F = P * T;<br><br>
+                figure;<br>
+                step(F);<br>
+                title('Step Response');<br>
+                xlabel('Time (seconds)');<br>
+                ylabel('Position (meters)');<br>
+                grid on;<br><br>
+                
+                stepinfo(F)
+            </code> 
+        </div>
+        <div class="spacer3"></div>
+        <img src="{{ url_for('static', filename='Images/sr(basic).png') }}" alt="sr(basic)" class="result-image">
+        <div class="spacer1"></div>
+        <p class="image-description">The above step response shows the system's position over time in response to a step change in pressure.</p>
+        <p class="image-description">The system exhibits a slight overshoot, and then the response gradually decreases, settling at a steady-state value near 0.065 meters. This settling behavior is a clear indication of the system's inherent damping properties, as the oscillations diminish over time and the system stabilizes.</p>
+        <p>Step Response Information:</p>
+        <ul>
+            <li>Rise Time: {{ 0.9127 }} seconds</li>
+            <li>Settling Time: {{ 2.6881 }} seconds</li>
+            <li>Overshoot: {{ 5.8316 }} %</li>
+            <li>Steady-State Value: {{ 0.065 }} meters</li>
+            <!-- <li>Peak Time: {{ peak_time }} seconds</li>-->
+        </ul>
+
+    </section>
+
+<!--     <div class="spacer3"></div>
+
+    <section id="open_loop_poles/zeros">
+        <h2>Open-Loop Poles/Zeros</h2>
+        <div class="spacer1"></div>
+        <p>---------------------------------------</p>
+        <div class="code-container"> 
+            <code> 
+                figure;<br>
+                pzmap(F);<br>
+                title('Pole-Zero Map of the System');<br>
+                grid on;
+            </code> 
+        </div>
+        <div class="spacer3"></div>
+        <img src="{{ url_for('static', filename='Images/pzm(basic).png') }}" alt="pzm(basic)" class="result-image">
+    </section>
+
+    <div class="spacer3"></div>
+
+    <section id="open_loop_bode_plot">
+        <h2>Open-Loop Bode Plot</h2>
+        <div class="spacer1"></div>
+        <p>---------------------------------------------------------</p>
+        <div class="code-container"> 
+            <code> 
+                figure;<br>
+                bode(F);<br>
+                title('Bode Plot of the System');<br>
+                grid on;<br>
+            </code> 
+        </div>
+        <div class="spacer3"></div>
+        <img src="{{ url_for('static', filename='Images/bp(basic).png') }}" alt="bp(basic)" class="result-image">
+    </section> -->
+
+    <!-- 
+    <section id="state-space-model">
+        <h2>State-space model</h2>
+        <p>Details about the state-space model.</p>
+    </section>
+
+    <section id="transfer-function-model">
+        <h2>Transfer function model</h2>
+        <p>Details about the transfer function model.</p>
+    </section>
+    -->
+</div>
+{% endblock %}

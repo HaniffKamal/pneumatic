@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="content-area">
+    <h1>State Space Controller</h1>
+    <p class="intro-text">The State-Space method offers a modern control framework that represents system dynamics in terms of state variables, making it particularly suitable for modeling multi-input multi-output (MIMO) systems with internal feedback loops. Pole placement is a method used in state-space control to design state feedback controller that places the system poles at desired locations for stability and performance. It ensures the system behaves as required by adjusting the feedback gain matrix (K).</p>
+
+    <div class="spacer3"></div>
+
+        <!-- Table of Contents -->
+    <div class="table-of-contents">
+        <h2>Contents</h2>
+        <ul>
+            <li><a href="#State_space_equations">State-Space Equations</a></li>
+            <li><a href="#Control_Design_Using_Pole_Placement">Control Design Using Pole Placement</a></li>
+        </ul>
+    </div>
+
+    <section id="State_space_equations">
+    <h2>State-space equations</h2>
+    <div class="spacer1"></div>
+    <p class="intro-text">The general state-space form is:</p>
+
+        <p>\[\frac{dx}{dt} = Ax + Bu\]</p>
+        <p>\[y = Cx + Du\]</p>
+
+    <div class="spacer3"></div>
+
+    <p class="intro-text">This is then elaborated into the specific system:</p>
+        <p>
+        \[\dot{x}(t) = \begin{bmatrix} 0 & 1 \\ -k/M & -b/M \end{bmatrix} x(t)+ \begin{bmatrix} 0 \\ Apiston/M \end{bmatrix} u(t)\]
+        \[ y(t) = \begin{bmatrix} 1 & 0 \end{bmatrix} x(t)\]
+        </p>
+
+    <div class="spacer3"></div>
+
+    <p class="intro-text">So, lets:</p>
+    <p>
+        \[A = \begin{bmatrix} 0 & 1 \\ -k/M & -b/M \end{bmatrix}\]
+        \[B = \begin{bmatrix} 0 \\ Apiston/M \end{bmatrix}\]
+        \[ C = \begin{bmatrix} 1 & 0 \end{bmatrix}\]
+        \[ D = 0\]
+    </p>
+
+    <div class="spacer3"></div>
+
+        <p class="intro-text">The parameters is:</p>
+        <div class="spacer1"></div>
+        <p class="image-description">Cross-sectional area of the piston (A) = <b>0.0314 mm</b><sup>2</sup></p>
+        <p class="image-description">Mass (M) = <b>20 kg</b></p>
+        <p class="image-description">Damping Coefficient (D) = <b>60 Ns/m</b></p>
+        <p class="image-description">Spring Constant (C) = <b>100 N/m</b></p>
+        <p class="image-description">Pressure (P) = <b>20684.28 Pa</b></p>
+        <p class="image-description">Reference (R) = <b>0.065 m</b></p>
+ </section>
+
+  <div class="spacer3"></div>
+
+<section id="Control_Design_Using_Pole_Placement">
+<h2>Control Design Using Pole Placement</h2>
+
+    <div class="spacer3"></div>
+
+    <img src="{{ url_for('static', filename='Images/State(BD).png') }}" alt="state(BD)" class="PID-image">
+    <p class="intro-text">The State-Space control method is implemented using pole placement to regulate the position of a pneumatic actuator. The system is first modeled in state-space form, where the dynamic behavior is represented using matrices (A), (B), (C), and (D). These matrices define how the system's internal states evolve based on input signals. To achieve a stable and responsive system, desired pole locations are selected based on performance criteria such as settling time and overshoot. The MATLAB function place() is used to compute the feedback gain matrix (K), which is then applied to form the control law [u(t) = -Kx(t)]. This gain matrix is designed to place the closed-loop poles at specific positions in the complex plane to modify the dynamic response of the system.</p>
+
+    <div class="spacer3"></div>
+
+                    <div class="code-container"> 
+            <code> 
+            % Define system parameters <br> 
+            m = 20; % Mass (kg) <br> 
+            k = 100; % Spring constant (N/m) <br> 
+            b = 60; % Damping coefficient (Ns/m)
+            A_piston = 0.000314; % Cross-sectional area of the piston (m^2) <br> 
+            P = 20684.28; % Input Pressure (Pascal) <br> 
+            r = 0.065; % Reference <br> <br> 
+
+            % State-space representation <br> 
+            A = [0 1; -k/m -b/m]; <br> 
+            B = [0; A_piston/m]; <br> 
+            C = [1 0]; <br> 
+            D = 0; <br> <br> 
+
+            sys_ss = ss(A, B, C, D);<br> <br> 
+
+            % Desired poles for zero overshoot (critically damped) <br> 
+            desired_poles = [-2.5 -2]; % Adjust values for better damping <br> <br> 
+
+            % Compute state feedback gain using pole placement <br> 
+            K = place(A, B, desired_poles); <br> <br> 
+
+            % Closed-loop system with state feedback <br> 
+            A_cl = A - B*K; <br> <br> 
+
+
+            sys_cl = ss(A_cl, B*P, C, D); <br> <br> 
+
+            t= 0:0.1:9; <br> <br> 
+
+            % Display state-space matrices <br> 
+            disp('State-space representation with feedback:');<br> 
+            disp('A matrix:'); <br> 
+            disp(sys_cl.A); <br> 
+            disp('B matrix:'); <br> 
+            disp(sys_cl.B); <br> 
+            disp('C matrix:'); <br> 
+            disp(sys_cl.C); <br> 
+            disp('D matrix:'); <br> 
+            disp(sys_cl.D); <br> <br> 
+
+            % Step response in state-space <br> 
+            figure; <br> 
+            step(sys_cl,t); <br> 
+            title('Step Response with State Feedback (Zero Overshoot)'); <br> 
+            xlabel('Time (seconds)'); <br> 
+            ylabel('Position (meters)'); <br> 
+            grid on; <br> 
+            </code> 
+        </div>
+
+        <div class="spacer3"></div>
+
+    <img src="{{ url_for('static', filename='Images/State.png') }}" alt="state" class="result-image">
+        <p>Step Response Information:</p>
+        <ul>
+            <li>Rise Time: {{ 1.5157 }} seconds</li>
+            <li>Settling Time: {{ 2.6407 }} seconds</li>
+            <li>Overshoot: {{ 0 }} %</li>
+            <li>Steady-State Value: {{ 0.065 }} meters</li>
+        </ul>
+    <img src="{{ url_for('static', filename='Images/State1.png') }}" alt="state1" class="result-image">
+    <p class="intro-text"> As you can see, the step response of the system with state-space control shows a critically damped response with no overshoot. The system quickly reaches the desired position of 0.065 meters without oscillations, demonstrating effective control through pole placement.</p>
+
+</section>
+
+    <div class="spacer3"></div>
+
+</div>
+{% endblock %}

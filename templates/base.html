@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Sidebar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> 
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3">
+            <nav class="sidebar">
+                <div class="logo-container text-center">
+                    <img src="{{ url_for('static', filename='images/logo ftkekk.jpg') }}" class="custom-logo" alt="">
+                    <p class="logo-text">PNEUMATIC SYSTEM</p>
+                </div>
+                <ul class="nav flex-column">
+                    <!-- First Menu Set -->
+                    <li class="nav-item">
+                        <span class="nav-link main-menu" id="system-menu">SYSTEM</span>
+                        <ul class="nav flex-column submenu">
+                            <li class="nav-item"><a class="nav-link" href="/system/modeling">MODELING</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/system/analysis">ANALYSIS</a></li>
+                        </ul>
+                    </li>
+                    <!-- Second Menu Set -->
+                    <li class="nav-item">
+                        <span class="nav-link main-menu" id="control-menu">CONTROL</span>
+                        <ul class="nav flex-column submenu">
+                            <li class="nav-item"><a class="nav-link" href="/control/pid">PID</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/control/state-space">STATE SPACE</a></li>
+                        </ul>
+                    </li>
+                    <!-- Third Menu Set -->
+                    <li class="nav-item">
+                        <span class="nav-link main-menu" id="simulink-menu">SIMULINK</span>
+                        <ul class="nav flex-column submenu">
+                            <li class="nav-item"><a class="nav-link" href="/simulink/modeling">MODELING</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/simulink/control">CONTROL</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/simulink/simscape">SIMSCAPE</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-md-9">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // JavaScript to handle the active state of the main menu and submenu
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            // Remove active class from all links
+            document.querySelectorAll('.nav-link').forEach(item => item.classList.remove('active'));
+
+            // Add active class to the clicked link
+            link.classList.add('active');
+
+            // If the clicked link is a submenu, add active class to its parent main menu
+            if (link.closest('.submenu')) {
+                link.closest('.submenu').previousElementSibling.classList.add('active');
+            }
+        });
+
+        // Check if the current URL matches the link href
+        if (window.location.pathname === link.getAttribute('href')) {
+            link.classList.add('active');
+            // If the current link is a submenu, activate its parent main menu
+            if (link.closest('.submenu')) {
+                link.closest('.submenu').previousElementSibling.classList.add('active');
+            }
+        }
+    });
+</script>
+</body>
+</html>

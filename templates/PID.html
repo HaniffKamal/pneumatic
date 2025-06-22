@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="content-area">
+    <section id="pid_overview">
+    <h1>PID Controller</h1>
+    <div class="spacer3"></div>
+    <img src="{{ url_for('static', filename='Images/PID.png') }}" alt="IMG 1" class="PID-image">
+    <p class="intro-text">A PID (Proportional-Integral-Derivative) controller is a feedback control mechanism that dynamically adjusts a system’s input to minimize the error between a desired setpoint and the measured output. The Proportional (P) term responds to the current error magnitude, providing immediate correction but potentially leaving residual steady-state error. The Integral (I) term addresses accumulated past errors, eliminating long-term offsets at the risk of overshoot. The Derivative (D) term predicts future error trends, stabilizing the system by damping oscillations. Combined, these components enable precise, adaptive control in applications ranging from industrial automation to pneumatic systems. In this project, PID controllers regulate parameters like actuator position or chamber pressure, allowing users to tune gains via an interactive interface and observe real-time effects on stability and performance. This integration demonstrates the balance between theoretical control principles and practical implementation, emphasizing PID’s role in optimizing dynamic systems while highlighting challenges such as tuning complexity and dependency on accurate feedback.</p>
+    <img src="{{ url_for('static', filename='Images/PID(details).png') }}" alt="IMG 2" class="PID2-image">
+    </section>
+    
+    <div class="spacer3"></div>
+
+    <!-- Table of Contents -->
+    <div class="table-of-contents">
+        <h2>Contents</h2>
+        <ul>
+            <li><a href="#pid_overview">PID Overview</a></li>
+            <li><a href="#characteristics_of_P_I_D">Characteristics Of P, I, D</a></li>
+            <li><a href="#system_model_and_parameters">System Model And Parameters</a></li>
+            <li><a href="#proportional_control">Proportional Control</a></li>
+            <li><a href="#pi_control">PI Control</a></li>
+            <li><a href="#pd_control">PD Control</a></li>
+            <li><a href="#pid_control">PID Control</a></li>
+            <li><a href="#pid_tuner">PID Tuner</a></li>
+        </ul>
+    </div>
+
+    <!-- Sections -->
+
+    <div class="spacer3"></div>
+
+    <section id="characteristics_of_P_I_D">
+        <h2>Characteristics Of P, I, D</h2>
+        <div class="spacer1"></div>
+        <p class="intro-text">In pneumatic control systems, <b>P (Proportional), I (Integral), and D (Derivative)</b> are the three fundamental components of a PID controller, each with distinct characteristics:
+        </p>
+        <ul>
+            <li><b>Proportional (P):</b> Reacts to the present error by adjusting the output proportionally. It provides immediate correction but does not eliminate steady-state error.</li>
+            <li><b>Integral (I):</b> Addresses accumulated past errors, gradually eliminating steady-state error over time. However, it may reduce system stability.</li>
+            <li><b>Derivative (D):</b> Predicts future errors based on the rate of change, improving stability and reducing overshoot.</li>
+        </ul>
+
+        <div class="spacer2"></div>
+        
+        <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Rise Time</th>
+          <th>Overshoot ↑</th>
+          <th>Settling Time</th>
+          <th>Steady-State Error</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Proportional (P)</strong></td>
+          <td>Decreases</td>
+          <td>Increases</td>
+          <td>Small change</td>
+          <td>Decreases</td>
+        </tr>
+        <tr>
+          <td><strong>Integral (I)</strong></td>
+          <td>Decreases</td>
+          <td>Increases</td>
+          <td>Increases</td>
+          <td>Eliminates</td>
+        </tr>
+        <tr>
+          <td><strong>Derivative (D)</strong></td>
+          <td>Small change</td>
+          <td>Decreases</td>
+          <td>Decreases</td>
+          <td>Small change</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="spacer3"></div>
+
+    </section>
+        <section id="system_model_and_parameters">
+        <h2>System Model And Parameters</h2>
+        <div class="spacer2"></div>
+        <img src="{{ url_for('static', filename='Images/Pneumatic System.png') }}" alt="Pneumatic System" class="modeling-image">
+        <p class="image-description"> The transfer function between the input Pressure <b>P(s)</b> and the output displacement <b>X(s)</b> then becomes:
+        <div class="spacer2"></div>
+            <p>\[ T(s) = \frac{X(s)}{P(s)} = \frac{A}{Ms^2 + Ds + C} \]</p>
+        </p>
+    </section>
+
+    <div class="spacer3"></div>
+
+    <section id="system_parameters">
+        <h2>System Parameters</h2>
+        <div class="spacer1"></div>
+        <p class="image-description"><b>Fixed value:</b></p>
+        <p class="image-description">Cross-sectional area of the piston (A) = <b>0.0314 mm</b><sup>2</sup></p>
+        <p class="image-description">Reference (R) = <b>0.065 m</b></p>
+        <div class="spacer2"></div>
+        <p class="image-description"><b>Variable value:</b></p>
+        <p class="image-description">Mass (M) = <b>20 kg</b></p>
+        <p class="image-description">Damping Coefficient (D) = <b>60 Ns/m</b></p>
+        <p class="image-description">Spring Constant (C) = <b>100 N/m</b></p>
+        <p class="image-description">Pressure (P) = <b>20684.28 Pa</b></p>
+    </section>
+
+    <div class="spacer3"></div>
+    
+    <section id="proportional_control">
+        <h2>Proportional Control</h2>
+        <p class="intro-text">From the table shown above, the <b>proportional controller (P)</b> reduces the rise time, increases the overshoot, and reduces the steady-state error. 
+            The closed-loop transfer function of unity-feedback system with a proportional controller is the following, where X(s) is output and reference R(s) is the input:</p>
+        <div class="spacer3"></div>
+        <p>\[ T(s) = \frac{X(s)}{R(s)} = \frac{AK_p}{Ms^2 + Ds + C + K_p} \]</p>
+        <div class="spacer3"></div>
+                <div class="code-container"> 
+            <code> 
+                % Transfer function for the pneumatic control system <br> 
+                s = tf('s'); <br> 
+                T = A / (M*s^2 + D*s + C);<br> <br> 
+
+                % PID controller parameters <br>
+                Kp = 1000000; % Proportional gain <br> <br> 
+
+                % PID controller transfer function <br>
+                C = pid(Kp); <br> <br> 
+
+                % Closed-loop system with PID controller <br> 
+                F = feedback(T*C, 1) ; <br> <br> 
+
+                t= 0:0.1:9; <br> <br> 
+
+                % Step response with setpoint <br>
+                figure; <br> 
+                step(r * F,t); <br> 
+                title('Step Response with PID Controller and Reference Input'); <br> 
+                xlabel('Time'); <br> 
+                ylabel('Position (meters)'); <br> 
+                grid on; <br> 
+            </code> 
+        </div>
+        <img src="{{ url_for('static', filename='Images/P.png') }}" alt="P" class="result-image">
+            <p>Step Response Information for Kp = 1000000:</p>
+        <ul>
+            <li>Rise Time: {{ 0.3543 }} seconds</li>
+            <li>Settling Time: {{ 2.4286 }} seconds</li>
+            <li>Overshoot: {{ 30.74 }} %</li>
+            <li>Steady-State Value: {{ 0.049 }} meters</li>
+        </ul>
+         <div class="spacer2"></div>
+        <div class="code-container"> 
+            <code> 
+                Kp = 9000000; % Proportional gain <br>
+            </code> 
+        </div>
+        <img src="{{ url_for('static', filename='Images/P1.png') }}" alt="P1" class="result-image">
+        <p>Step Response Information for Kp = 9000000:</p>
+        <ul>
+            <li>Rise Time: {{ 0.1090 }} seconds</li>
+            <li>Settling Time: {{ 2.4195 }} seconds</li>
+            <li>Overshoot: {{ 63.25 }} %</li>
+            <li>Steady-State Value: {{ 0.062 }} meters</li>
+        </ul>
+        <p class="intro-text">Based on 2 above step response results, prove that the proportional gain can reduces the rise time, increases the overshoot, and reduces the steady-state error. </p>
+
+        </section>
+
+    <div class="spacer3"></div>
+
+   <section id="pi_control">
+        <h2>Proportional-Integral Control</h2>
+        <p class="intro-text"> From the table, show that the addition of <b>integral control (I)</b> tends to decrease the rise time, 
+            increase both the overshoot and the settling time, and eliminates the steady-state error. 
+            For the given system, the closed-loop transfer function with a PI controller is:</p>
+        <div class="spacer3"></div>
+        <p>\[ T(s) = \frac{X(s)}{R(s)} = \frac{A(K_ps + K_i)}{Ms^3 + Ds^2 + (C + K_p)s + K_i} \]</p>
+        <div class="spacer3"></div>
+                <div class="code-container"> 
+            <code> 
+                % Transfer function for the pneumatic control system <br> 
+                s = tf('s'); <br> 
+                T = A / (M*s^2 + D*s + C);<br> <br> 
+
+                % PID controller parameters <br>
+                Kp = 1000000; % Proportional gain <br> 
+                Ki = 1000000; % Integral gain <br> <br> 
+
+                % PID controller transfer function <br>
+                C = pid(Kp,Ki); <br> <br> 
+
+                % Closed-loop system with PID controller <br> 
+                F = feedback(T*C, 1) ; <br> <br> 
+
+                t= 0:0.1:9; <br> <br> 
+
+                % Step response with setpoint <br>
+                figure; <br> 
+                step(r * F,t); <br> 
+                title('Step Response with PID Controller and Reference Input'); <br> 
+                xlabel('Time'); <br> 
+                ylabel('Position (meters)'); <br> 
+                grid on; <br> 
+            </code> 
+        </div>
+        <div class="spacer3"></div>
+        <img src="{{ url_for('static', filename='Images/PI.png') }}" alt="PI" class="result-image">
+                    <p>Step Response Information for Ki = 1000000:</p>
+        <ul>
+            <li>Rise Time: {{ 0.3362 }} seconds</li>
+            <li>Settling Time: {{ 3.3352 }} seconds</li>
+            <li>Overshoot: {{ 26.97 }} %</li>
+            <li>Steady-State Value: {{ 0.065 }} meters</li>
+        </ul>
+         <div class="spacer2"></div>
+        <div class="code-container"> 
+            <code> 
+                Ki = 2000000; % Integral gain <br>
+            </code> 
+        </div>
+        <img src="{{ url_for('static', filename='Images/PI1.png') }}" alt="P1" class="result-image">
+        <p>Step Response Information for Ki = 2000000:</p>
+        <ul>
+            <li>Rise Time: {{ 0.2963 }} seconds</li>
+            <li>Settling Time: {{ 5.3892 }} seconds</li>
+            <li>Overshoot: {{ 48.91 }} %</li>
+            <li>Steady-State Value: {{ 0.065 }} meters</li>
+        </ul>
+        <p class="intro-text">Based on 2 above step response results, prove that the integral gain can decrease the rise time, increase both the overshoot and the settling time, and eliminates the steady-state error. </p>
+        </section>
+
+            <div class="spacer3"></div>
+
+   <section id="pd_control">
+        <h2>Proportional-Derivative Control</h2>
+        <p class="intro-text"> From the table, show that the addition of <b>derivative control (D)</b> tends to reduce both the overshoot and the settling time. 
+            The closed-loop transfer function of the given system with a PD controller is:</p>
+        <div class="spacer3"></div>
+        <p>\[ T(s) = \frac{X(s)}{R(s)} = \frac{A(K_ds + K_p)}{Ms^2 + (D + K_d)s + C + K_p} \]</p>
+        <div class="spacer3"></div>
+                <div class="code-container"> 
+            <code> 
+                % Transfer function for the pneumatic control system <br> 
+                s = tf('s'); <br> 
+                T = A / (M*s^2 + D*s + C);<br> <br> 
+
+                % PID controller parameters <br>
+                Kp = 10000000; % Proportional gain <br> 
+                Kd = 300000; % Derivative gain <br> <br> 
+
+                % PID controller transfer function <br>
+                C = pid(Kp,0,Kd); <br> <br> 
+
+                % Closed-loop system with PID controller <br> 
+                F = feedback(T*C, 1) ; <br> <br> 
+
+                t= 0:0.1:9; <br> <br> 
+
+                % Step response with setpoint <br>
+                figure; <br> 
+                step(r * F,t); <br> 
+                title('Step Response with PID Controller and Reference Input'); <br> 
+                xlabel('Time'); <br> 
+                ylabel('Position (meters)'); <br> 
+                grid on; <br> 
+            </code> 
+        </div>
+        <img src="{{ url_for('static', filename='Images/PD.png') }}" alt="P1" class="result-image">
+        <p>Step Response Information for Kd = 300000:</p>
+        <ul>
+            <li>Rise Time: {{ 0.0933 }} seconds</li>
+            <li>Settling Time: {{ 0.8532 }} seconds</li>
+            <li>Overshoot: {{ 39.89 }} %</li>
+            <li>Steady-State Value: {{ 0.063 }} meters</li>
+        </ul>
+         <div class="spacer2"></div>
+        <div class="code-container"> 
+            <code> 
+                Kd = 800000; % Integral gain <br>
+            </code> 
+        </div>
+        <img src="{{ url_for('static', filename='Images/PD1.png') }}" alt="P1" class="result-image">
+        <p>Step Response Information for Kd = 800000:</p>
+        <ul>
+            <li>Rise Time: {{ 0.0830 }} seconds</li>
+            <li>Settling Time: {{ 0.3847 }} seconds</li>
+            <li>Overshoot: {{ 18.8534}} %</li>
+            <li>Steady-State Value: {{ 0.063 }} meters</li>
+        </ul>
+        <p class="intro-text">Based on 2 above step response results, prove that the derivative gain can reduce both the overshoot and the settling time. </p>
+        </section>
+
+        <div class="spacer3"></div>
+
+   <section id="pid_control">
+        <h2>Proportional-Integral-Derivative Control</h2>
+        <p class="intro-text"> To get the stability and best performance for pneumatic system must use of this 3 elements(P,I,D). To tune the PID values can use the PID-Tuner on the MATLAB features, refer to <a href="/simulink/control">Simulink Control</a> page on section PID.</p>
+        <p class="intro-text"> The closed-loop transfer function of the given system with a PID controller is:</p>
+        <div class="spacer3"></div>
+        <p>\[ T(s) = \frac{X(s)}{R(s)} = \frac{A(K_ds^2 + K_ps + K_i)}{Ms^3 + (D + K_d)s^2 + (C + K_p)s + K_i} \]</p>
+        <div class="spacer3"></div>
+                <div class="code-container"> 
+            <code> 
+                % Transfer function for the pneumatic control system <br> 
+                s = tf('s'); <br> 
+                T = A / (M*s^2 + D*s + C);<br> <br> 
+
+                % PID controller parameters <br>
+                Kp = 1220700.47323787; % Proportional gain <br>
+                Ki = 1321094.32662005; % Integral gain <br>
+                Kd = 277225.578361616; % Derivative gain <br><br>
+
+                % PID controller transfer function <br>
+                C = pid(Kp,Ki,Kd); <br> <br> 
+
+                % Closed-loop system with PID controller <br> 
+                F = feedback(T*C, 1) ; <br> <br> 
+
+                t= 0:0.1:9; <br> <br> 
+
+                % Step response with setpoint <br>
+                figure; <br> 
+                step(r * F,t); <br> 
+                title('Step Response with PID Controller and Reference Input'); <br> 
+                xlabel('Time'); <br> 
+                ylabel('Position (meters)'); <br> 
+                grid on; <br> 
+            </code> 
+        </div>
+        <div class="spacer3"></div>
+        <img src="{{ url_for('static', filename='Images/PID(code).png') }}" alt="PID(code)" class="result-image">
+        <p>Step Response Information for PID:</p>
+        <ul>
+            <li>Rise Time: {{ 0.3670 }} seconds</li>
+            <li>Settling Time: {{ 2.1306 }} seconds</li>
+            <li>Overshoot: {{ 0 }} %</li>
+            <li>Steady-State Value: {{ 0.065 }} meters</li>
+        </ul>
+        <p class="intro-text">So, the system have fast response and no overshoot.</p>
+        </section>
+</div>
+{% endblock %}

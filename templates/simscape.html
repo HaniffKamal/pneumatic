@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="content-area">
+    <h1>Simscape Modeling</h1>
+
+    <div class="spacer1"></div>
+
+    <p class="intro-text">Simscape is a powerful MATLAB tool for modeling and simulating pneumatic systems, offering a component-based approach that simplifies design and analysis. 
+        It allows engineers to simulate air flow, pressure dynamics, and actuator behavior using a pre-built library of pneumatic components such as valves, cylinders, and compressors. 
+        By integrating with Simulink, Simscape enables the development and testing of control strategies for pneumatic actuators while accounting for real-world effects like air compressibility and temperature changes.
+    </p>
+    <p class="intro-text">Widely used in automation, vehicle systems, and manufacturing, Simscape helps optimize pneumatic designs for efficiency and reliability. 
+        A typical pneumatic system model includes an air supply, control valves, actuators, and load analysis to simulate force exertion. 
+        Engineers can fine-tune parameters such as pressure, valve timing, and cylinder dimensions to enhance performance before real-world implementation. 
+        By providing accurate simulations and reducing development time, Simscape is an essential tool for designing robust pneumatic systems across various industries.
+    </p>
+
+    <div class="spacer3"></div>
+
+        <!-- Table of Contents -->
+    <div class="table-of-contents">
+        <h2>Contents</h2>
+        <ul>
+            <li><a href="#Modeling">Modeling</a></li>
+            <li><a href="#PID-Controller">PID Controller</a></li>
+            <li><a href="#Simulink-VS-Simscape">Simulink VS Simscape</a></li>
+        </ul>
+    </div>
+
+    <section id="Modeling">
+    <h2>Modeling</h2>
+
+    <div class="spacer3"></div>
+
+    <img src="{{ url_for('static', filename='Images/Simscape(Modeling).png') }}" alt="Simscape(Modeling)" class="PID-image">
+        <h2>Key Components the Pneumatic System</h2>
+    <ul class="intro-text">
+      <li>
+        <strong>Double-Acting Actuator (Cylinder):</strong> 
+        Connected to <em>Pipe A</em> and <em>Pipe B</em>, this channeling of compressed air to either side of the piston allows for the movement needed to drive an attached load.
+      </li>
+      <li>
+        <strong>Directional Valve:</strong> 
+        Controls the flow by directing pressurized air to either Pipe A or Pipe B, thus determining the direction in which the actuator moves. This switching mechanism is vital for precise motion control.
+      </li>
+      <li>
+        <strong>Supply and Return Pipes:</strong> 
+        The <em>Supply Pipe</em> delivers compressed air into the system, while the <em>Return Pipe</em> vents the air back to a reservoir or the atmosphere, ensuring stable operation.
+      </li>
+      <li>
+        <strong>Convection Pipes (Vents):</strong> 
+        Serve to release air when it is not needed in the circuit. This helps in balancing pressure and enhancing the smoothness of the system’s movement.
+      </li>
+      <li>
+        <strong>Load and Rod Displacement (y):</strong> 
+        The displacement of the actuator's rod, measured as <em>y</em>, directly relates to the performance of the system and is a crucial component in feedback control.
+      </li>
+      <li>
+        <strong>Equation Block (f(x) = 0):</strong> 
+        Represents mathematical constraints or dynamic equilibrium equations governing the system. This block is key for defining the physical relationships in play.
+      </li>
+    </ul>
+
+    <div class="spacer2"></div>
+
+    <img src="{{ url_for('static', filename='Images/Pipe.png') }}" alt="Pipe" class="four-image">
+    <p class="intro-text">The above image presents a schematic diagram of a pipe system, which is designed to illustrate how various components are interconnected within the system. The diagram is a valuable tool for understanding the layout and flow of gas through the system.</p>
+    <ul class="intro-text">
+      <li>
+        <strong>A:</strong> This label typically represents an <em>input or supply node</em>. It is often the point at which the system receives the main gas input, channeling the flow into the rest of the network.
+      </li>
+      <li>
+        <strong>B:</strong> Generally marks a <em>branch or intermediary node</em>. It indicates a junction where the gas flow may split, converge, or be redirected. This node is critical for managing the distribution of the working medium within the system.
+      </li>
+      <li>
+        <strong>T:</strong> Usually denotes a <em>terminal element</em> – often a tank, reservoir, or a component with thermal mass. This part of the system may serve to store gas or to interact thermally with the gas, contributing to the overall regulation of pressure or temperature.
+      </li>
+    </ul>
+
+    <div class="spacer2"></div>
+
+    <img src="{{ url_for('static', filename='Images/Valve.png') }}" alt="Valve" class="fifth-image">
+    <p class="intro-text">This diagram illustrates a pneumatic system valve layout, which is crucial in directing gas flow and ensuring proper system functionality. The schematic provides a detailed view of how the valve, along with its related components, manages both positive and negative gas strokes through defined orifice areas.</p>
+    <p class="intro-text">The system valve (S) controls the flow direction, with clear indicators (arrows) denoting gas movement. The flow paths are arranged to accommodate both the positive and negative strokes, ensuring that the orifice areas (labeled as TA, PA, PB, and TB) receive or vent the gas appropriately. This configuration allows for precise control over the actuator's movements and overall system performance.</p>
+    <ul class="intro-text">
+      <li>
+        <strong>S – System Valve:</strong> This is the primary control element that directs the flow of hydraulic gas. It determines which flow path is activated to manage the movement of the actuator.
+      </li>
+      <li>
+        <strong>P – Pressure Source:</strong> Represents the pressurized gas input, providing the necessary energy for system actuation.
+      </li>
+      <li>
+        <strong>T – Tank/Reservoir:</strong> Acts as a return or storage point for the gas, maintaining system balance and ensuring a continuous supply.
+      </li>
+      <li>
+        <strong>A &amp; B – Control Valves:</strong> These valves are used to fine-tune the system operation by directing fluid to the desired parts of the circuit. They help manage the detailed flow paths that contribute to controlled movement.
+      </li>
+      <li>
+        <strong>AR – Area Ratio:</strong> Indicates the ratio of the orifice areas, impacting the flow rate and overall balance between the positive and negative strokes.
+      </li>
+    </ul>
+    
+    <div class="spacer2"></div>
+
+    <img src="{{ url_for('static', filename='Images/actuotor.png') }}" alt="actuotor" class="fifth-image">
+    <p class="intro-text">This schematic diagram illustrates a double-acting actuator systems. The double-acting actuator system offers controlled motion in both directions, making it ideal for applications requiring bidirectional force. By alternately pressurizing Chamber A and Chamber B, the actuator ensures smooth and efficient movement. The inclusion of thermal management through convection and thermal mass elements further ensures that the system remains balanced and performs reliably even under varying operational conditions.</p>
+    <ul class="intro-text">
+      <li>
+        <strong>Chamber A and Chamber B:</strong> These are the two separate chambers within the actuator. Gas is alternately directed into these chambers, causing the piston to move back and forth. The differential pressure between the chambers produces the required force.
+      </li>
+      <li>
+        <strong>Piston Mass:</strong> The piston is connected to a rod that transmits the mechanical output. The movement of the piston, driven by the pressures in the two chambers, allows the actuator to perform work in both extension and retraction.
+      </li>
+      <li>
+        <strong>Thermal Mass and Convection Elements:</strong> These components are included to manage the thermal dynamics of the system. The thermal mass, connected via convection paths to a wall, helps stabilize the temperature and can play a role in the overall system’s dynamic response.
+      </li>
+      <li>
+        <strong>Valves and Connectors:</strong> The diagram identifies various valves and connectors (labeled with letters and numbers such as QA, QB, C, R, A, and B) that control the gas flow between chambers, the supply, and the return paths. These elements are critical in ensuring precise control and coordination of the actuator’s motion.
+      </li>
+    </ul>
+
+
+    <div class="spacer3"></div>
+
+        <img src="{{ url_for('static', filename='Images/Simscape(ModelingR).png') }}" alt="Simscape(ModelingR)" class="six-image">
+        <p>Step Response Information:</p>
+        <ul>
+            <li>Rise Time: {{ 0.6227 }} seconds</li>
+            <li>Settling Time: {{ 1.6908 }} seconds</li>
+            <li>Overshoot: {{ 10.01 }} %</li>
+            <li>Steady-State Value: {{ 0.065 }} meters</li>
+        </ul>
+</section>
+
+  <div class="spacer3"></div>
+
+<section id="PID-Controller">
+<h2>PID Controller</h2>
+
+    <div class="spacer3"></div>
+
+    <img src="{{ url_for('static', filename='Images/Simscape(PID).png') }}" alt="Simscape(PID)" class="result-image">
+    <p class="intro-text">This Simscape model demonstrates a closed-loop pneumatic actuator system enhanced with a <strong>Proportional-Integral-Derivative (PID) Controller</strong>. The objective is to regulate the actuator’s rod position by continuously adjusting the input force based on the deviation from a reference value(0.065). To enhance the understand about this system with control, so <b>set value P,I,D same as in MATLAB/Simulink.</b></p>
+    <img src="{{ url_for('static', filename='Images/Simscape(PIDM).png') }}" alt="Simscape(PIDM)" class="PID-image">
+    <p class="intro-text">From above image is output pid connect to the input system valve. This is how to connect pid control to the system.</p>
+
+    <div class="spacer2"></div>
+
+    <img src="{{ url_for('static', filename='Images/Simscape(PIDR).png') }}" alt="Simscape(PIDR)" class="seven-image">
+            <p>Step Response Information (PID):</p>
+        <ul>
+            <li>Rise Time: {{ 0.5023 }} seconds</li>
+            <li>Settling Time: {{ 3.1429 }} seconds</li>
+            <li>Overshoot: {{ 29.05 }} %</li>
+            <li>Steady-State Value: {{ 0.065 }} meters</li>
+        </ul>
+
+        <div class="spacer1"></div>
+
+    <h2>Why the Simscape PID-Controlled System Shows Overshoot?</h2>
+    <p class="intro-text">In your Simscape simulation, even with the same PID parameters, the system’s step response includes a visible <strong>overshoot</strong> unlike the smoother, tightly controlled output observed in a classic Simulink setup. This result is expected, and here's why:</p>
+
+    <b>Physical Realism in Simscape</b>
+    <ul class="intro-text">
+      <li><strong>Dynamic Components:</strong> Simscape accurately models the compressibility of air, flow resistance, and valve delays. These effects introduce <em>inertia and lag</em> not present in a block-level Simulink model.</li>
+      <li><strong>Hidden Nonlinearities:</strong> Real-world elements like seal friction, pressure buildup, and actuator elasticity are simulated, which naturally affect responsiveness and settling behavior.</li>
+    </ul>
+    <b>Solver Differences</b>
+    <ul class="intro-text">
+      <li><strong>Numerical Integration:</strong> Simscape uses solvers designed for physical systems. Even with similar settings, slight integration differences can influence how energy is transferred and absorbed in the system.</li>
+    </ul>
+
+    <b>Controller Sensitivity</b>
+    <ul class="intro-text">
+      <li><strong>PID in Context:</strong> In Simulink, the PID block assumes an ideal plant. But in Simscape, it’s interacting with a richer physical model, making the same gains potentially too aggressive especially the derivative term.</li>
+    </ul>
+
+    <b>What This Teaches</b>
+    <p class="intro-text">The overshoot isn’t a flaw, it’s a valuable insight into how your controller performs under real-world conditions. This simulation bridges theory and practice, highlighting the importance of <strong>realistic modeling and tuning</strong>.</p>
+    <p class="intro-text">To mitigate the overshoot, consider retuning your gains (especially <code>Kp</code> and <code>Kd</code>) based on the Simscape system’s dynamics or explore using automatic tuning tools available in Simulink Control Design.</p>
+</section>
+
+<div class="spacer3"></div>
+
+<section id="Simulink-VS-Simscape">
+<h2>Why Simulink and Simscape Results Differ</h2>
+<img src="{{ url_for('static', filename='Images/SimulinkvsSimscape.png') }}" alt="SimulinkvsSimscape" class="six-image">
+<p>
+    When comparing simulation results between Simulink and Simscape, you may notice differences such as overshoot or variations in transient behavior despite using the same PID controller parameters and setpoint. This disparity comes from the fundamentally different modeling approaches employed by each platform. Key differences Simscape and Simulink:
+</p>
+    <b>Simulink</b>
+    <ul>
+      <li>
+        <strong>Idealized Modeling:</strong> Simulink relies on signal-based, block-level models using idealized equations and transfer functions.
+      </li>
+      <li>
+        <strong>Simplified Dynamics:</strong> It assumes instantaneous inputs and outputs with no delay, friction, or physical component nonlinearities.
+      </li>
+    </ul>
+    
+    <b>Simscape</b>
+    <ul>
+      <li>
+        <strong>Physical Component Modeling:</strong> Simscape captures real-world dynamics, such as air compressibility, internal friction, valve delays, and pressure build-up within pneumatic components.
+      </li>
+      <li>
+        <strong>Realistic Behavior:</strong> The simulation accounts for hidden nonlinearities and delays inherent in physical systems, leading to more realistic dynamic responses.
+      </li>
+    </ul>
+    
+    <b>Reasons for the Observed Differences</b>
+    <ul>
+      <li>
+        <strong>Hidden Physics:</strong> Simscape models include additional physical phenomena (e.g., inertia, flow resistance, and actuator compliance) that are not represented in the idealized Simulink blocks.
+      </li>
+      <li>
+        <strong>Solver and Integration Variance:</strong> Simscape uses specialized numerical solvers tailored for differential-algebraic equations (DAEs). These solvers can yield different transient responses compared to the numerical integration methods used in Simulink.
+      </li>
+      <li>
+        <strong>Controller Interaction:</strong> While your PID gains are identical, the controller in a Simscape environment interacts with a more complex, realistic plant, which might result in slight overshoot or slower settling times.
+      </li>
+    </ul>
+    
+    <h2>Conclusion</h2>
+    <p>
+      The differences between Simulink and Simscape results highlight the importance of model fidelity. While Simulink offers a simplified view to analyze control strategies, Simscape bridges these strategies with physical reality, helping you understand how a system will behave under real-world conditions. Adjustments in PID tuning may be necessary in Simscape to compensate for these additional dynamics.
+    </p>
+
+</section>
+
+</div>
+{% endblock %}
